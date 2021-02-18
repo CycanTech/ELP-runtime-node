@@ -39,7 +39,7 @@ cargo build --release --features=real-overseer
 
 ```bash
 # Compile
-git clone https://github.com/szout/everlasting-network
+git clone https://github.com/CycanTech/ELP-runtime-node.git
 cargo build --release
 
 # Export genesis state
