@@ -1,18 +1,15 @@
 use cumulus_primitives::ParaId;
-use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
-use sc_service::{ChainType, Properties};
+use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup, Properties};
+use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
-use sp_core::{sr25519, Pair, Public};
+use sp_core::{Pair, Public, sr25519, H160, U256};
 use sp_runtime::traits::{IdentifyAccount, Verify};
-use std::collections::BTreeMap;
-
 use parachain_runtime::{
-        AccountId, AuraConfig, EVMConfig, EthereumConfig, GrandpaConfig, Signature
+        AccountId, Signature, EVMConfig, ContractsConfig,
+        SchedulerConfig, DemocracyConfig ,EthereumConfig,ElectionsConfig
 };
-use parachain_runtime::ContractsConfig;
-
-use sp_consensus_aura::sr25519::AuthorityId as AuraId;
-use sp_finality_grandpa::AuthorityId as GrandpaId;
+use std::collections::BTreeMap;
+use std::str::FromStr;
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
 pub type ChainSpec = sc_service::GenericChainSpec<parachain_runtime::GenesisConfig, Extensions>;
@@ -51,14 +48,6 @@ where
 	AccountPublic::from(get_from_seed::<TPublic>(seed)).into_account()
 }
 
-/// Generate an Aura authority key.
-pub fn authority_keys_from_seed(s: &str) -> (AuraId, GrandpaId) {
-        (
-                get_from_seed::<AuraId>(s),
-                get_from_seed::<GrandpaId>(s),
-        )
-}
-
 pub fn development_config(id: ParaId) -> ChainSpec {
 	ChainSpec::from_genesis(
 		// Name
@@ -68,11 +57,6 @@ pub fn development_config(id: ParaId) -> ChainSpec {
 		ChainType::Local,
 		move || {
 			testnet_genesis(
-                                // Initial PoA authorities
-                                vec![
-                                       authority_keys_from_seed("Alice"),
-                                       authority_keys_from_seed("Bob"),
-                                ],
                                 // Sudo account
 				get_account_id_from_seed::<sr25519::Public>("Alice"),
 				vec![
@@ -96,25 +80,18 @@ pub fn development_config(id: ParaId) -> ChainSpec {
 }
 
 pub fn local_testnet_config(id: ParaId) -> ChainSpec {
-
         let mut properties = Properties::new();
-        properties.insert("tokenSymbol".into(), "ELPR".into());
+        properties.insert("ss58Format".into(), "42".into());
+        properties.insert("tokenSymbol".into(), "PNX".into());
         properties.insert("tokenDecimals".into(), 12.into());
 
         ChainSpec::from_genesis(
-                "Everlasting Parallel Rococo", // Name
-                "everlasting_parallel_rococo", // ID
+                "phoenix", // Name
+                "phoenix", // ID
 		ChainType::Local,
 		move || {
 			testnet_genesis(
-                                // Initial PoA authorities
-                                vec![
-                                       authority_keys_from_seed("Alice"),
-                                       authority_keys_from_seed("Bob"),
-                                ],
-                                // Sudo account
 				get_account_id_from_seed::<sr25519::Public>("Alice"),
-                                // pre-funded account
 				vec![
 					get_account_id_from_seed::<sr25519::Public>("Alice"),
 					get_account_id_from_seed::<sr25519::Public>("Bob"),
@@ -132,9 +109,9 @@ pub fn local_testnet_config(id: ParaId) -> ChainSpec {
 				id,
 			)
 		},
-		vec![], // Bootnodes
-		None,   // Telemetry
-		Some("dot"),  // Protocol ID
+                vec![], // Bootnodes
+                None,   // Telemetry
+                Some("dot"),  // Protocol ID
                 Some(properties),
                 Extensions {
                         relay_chain: "rococo-local-raw.json".into(),
@@ -144,11 +121,25 @@ pub fn local_testnet_config(id: ParaId) -> ChainSpec {
 }
 
 fn testnet_genesis(
-        initial_authorities: Vec<(AuraId, GrandpaId)>,
 	root_key: AccountId,
 	endowed_accounts: Vec<AccountId>,
 	id: ParaId,
 ) -> parachain_runtime::GenesisConfig {
+        const STASH: u128 = 20_000;
+	let num_endowed_accounts = endowed_accounts.len();
+        
+	let gerald_evm_account_id = H160::from_str("6be02d1d3665660d22ff9624b7be0551ee1ac91b").unwrap();
+	let mut evm_accounts = BTreeMap::new();
+	evm_accounts.insert(
+		gerald_evm_account_id,
+		pallet_evm::GenesisAccount {
+			nonce: 0.into(),
+			balance: U256::from(123456_123_000_000_000_000_000u128),
+			storage: BTreeMap::new(),
+			code: vec![],
+		},
+	);
+
 	parachain_runtime::GenesisConfig {
 		frame_system: Some(parachain_runtime::SystemConfig {
 			code: parachain_runtime::WASM_BINARY
@@ -156,12 +147,6 @@ fn testnet_genesis(
 				.to_vec(),
 			changes_trie_config: Default::default(),
 		}),
-                pallet_aura: Some(AuraConfig {
-                        authorities: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
-                }),
-                pallet_grandpa: Some(GrandpaConfig {
-                        authorities: initial_authorities.iter().map(|x| (x.1.clone(), 1)).collect(),
-                }),
 		pallet_balances: Some(parachain_runtime::BalancesConfig {
 			balances: endowed_accounts
 				.iter()
@@ -171,14 +156,26 @@ fn testnet_genesis(
 		}),
 		pallet_sudo: Some(parachain_runtime::SudoConfig { key: root_key }),
 		parachain_info: Some(parachain_runtime::ParachainInfoConfig { parachain_id: id }),
+
                 pallet_contracts: Some(ContractsConfig {
                     current_schedule: pallet_contracts::Schedule {
                     ..Default::default()
                     },
                 }),
-                pallet_evm: Some(EVMConfig {
-                        accounts: BTreeMap::new(),
-                }),
+                pallet_scheduler: Some(SchedulerConfig {}),
+                pallet_democracy: Some(DemocracyConfig {}),
                 pallet_ethereum: Some(EthereumConfig {}),
+                pallet_evm: Some(EVMConfig {
+                        accounts: evm_accounts,
+                }),
+
+		pallet_elections_phragmen: Some(ElectionsConfig {
+			members: endowed_accounts.iter()
+						.take((num_endowed_accounts + 1) / 2)
+						.cloned()
+						.map(|member| (member, STASH))
+						.collect(),
+		}),
+
 	}
 }

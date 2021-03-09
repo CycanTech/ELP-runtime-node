@@ -1,9 +1,17 @@
-[profile.release]
-panic = 'unwind'
-
 [workspace]
 members = [
-    'node',
-    'pallets/*',
-    'runtime',
+	"runtime/",
+	"pallets/cumulus/rococo-parachains/pallets/parachain-info",
+        "pallets/frontier/frame/evm",
+	"node/",
+        "pallets/cumulus/consensus",
+        "pallets/cumulus/network",
+        "pallets/cumulus/primitives",
+        "pallets/cumulus/runtime",
+        "pallets/cumulus/service",
+        "pallets/cumulus/parachain-system",
+        "pallets/cumulus/xcm-handler",
 ]
+
+[profile.release]
+panic = 'unwind'

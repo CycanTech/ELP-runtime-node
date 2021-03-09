@@ -1,6 +1,24 @@
-# Everlasting Network Parachain
-  Everlasting Network Paranchain base in rococo-v1, buildin contracts supports. 
-This contracts interface supports Substrate 2.0+ with contracts using Ink! 3.0+ & EVM.
+# Phoenix Parachain
+  Phoenix Paranchain base in rococo-v1, buildin contracts supports. 
+This contracts interface supports Substrate 2.0+ with contracts using Ink! 3.0+.
+ suport EVM & Ethereum 
+include pallets list:
+```bash
+   pallet_timestamp
+   pallet_balances
+   pallet_sudo
+   pallet_randomness_collective_flip
+   cumulus_parachain_system
+   pallet_transaction_payment
+   parachain_info
+   xcm_handler
+   pallet_evm
+   pallet_ethereum
+   pallet_contracts
+   pallet_scheduler
+   pallet_democracy
+   pallet_elections_phragmen 
+```
 
 ## Build & Run
 
@@ -35,26 +53,26 @@ cargo build --release --features=real-overseer
   > relayB.out 2>&1 &
 ```
 
-### Launch the EverLasting Parachain
+### Launch the Phoenix Parachain
 
 ```bash
 # Compile
-git clone https://github.com/CycanTech/ELP-runtime-node.git
+git clone https://github.com/szout/phoenix.git
 cargo build --release
 
 # Export genesis state
-./target/release/everlasting-collator \
+./target/release/phoenix-collator \
   export-genesis-state \
   --parachain-id 200 \
   > genesis-state
 
 # Export genesis wasm
-./target/release/everlasting-collator \
+./target/release/phoenix-collator \
   export-genesis-wasm \
   > genesis-wasm
 
 # Collator1
-./target/release/everlasting-collator \
+./target/release/phoenix-collator \
   --collator \
   --tmp \
   --parachain-id 200 \
@@ -67,7 +85,7 @@ cargo build --release
   > Collator1.out 2>&1 &
 
 # Collator2
-./target/release/everlasting-collator \ 
+./target/release/phoenix-collator \ 
   --collator \  
   --tmp \ 
   --parachain-id 200 \ 
@@ -80,7 +98,7 @@ cargo build --release
   > Collator2.out 2>&1 &
 
 # Parachain Full Node
-./target/release/everlasting-collator \
+./target/release/phoenix-collator \
   --tmp \
   --parachain-id 200 \
   --port 40337 \
@@ -91,12 +109,12 @@ cargo build --release
   --port 30337 \
   > FullNode.out 2>&1 &
 ```
-### Register the everlasting parachain
+### Register the phoenix parachain
 ```bash
-# polkadot.js ui 
+# polkadot.js UI 
 https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9944
 
-ui menu level
+UI menu level
 sudo
   parasSudoWrapper
     sudoScheduleParaInitialize(id, genesis)
