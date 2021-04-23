@@ -40,7 +40,7 @@ cargo build --release
   > rococo-local-raw.json
 
 # Alice
-../polkadot/target/release/polkadot \
+./target/release/polkadot \
   --base-path ../data/rococo-relay1 \
   --chain rococo-local-raw.json \
   --rpc-methods Unsafe \
@@ -56,7 +56,7 @@ cargo build --release
 sleep 1
 
 # Bob
-../polkadot/target/release/polkadot \
+./target/release/polkadot \
   --base-path ../data/rococo-relay2 \
   --chain rococo-local-raw.json \
   --ws-port 9943 \
@@ -71,7 +71,7 @@ sleep 1
 
 ```bash
 # Compile
-git clone https://github.com/szout/phoenix.git
+git clone https://github.com/CycanTech/ELP-runtime-node
 cargo build --release
 
 # Export genesis state
@@ -86,7 +86,7 @@ cargo build --release
   > genesis-wasm
 
 # Collator1
-../phoenix/target/release/phoenix-collator \
+./target/release/phoenix-collator \
   --collator \
   --base-path ../data/phoenix-c1 \
   --parachain-id 6806 \
