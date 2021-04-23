@@ -273,6 +273,10 @@ git = "https://github.com/paritytech/polkadot"
 branch = 'rococo-v1'
 default-features = false
 
+[dependencies.price-fetch]
+default-features = false
+path = '../pallets/price-fetch'
+
 [features]
 default = ['std']
 runtime-benchmarks = [
@@ -323,4 +327,5 @@ std = [
 	"xcm-builder/std",
 	"xcm-executor/std",
 	"cumulus-pallet-xcm-handler/std",
+	"price-fetch/std",
 ]

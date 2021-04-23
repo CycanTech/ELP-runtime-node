@@ -568,6 +568,12 @@ impl bridge::Config for Runtime {
         type UnsignedInterval = UnsignedInterval;
         type UnsignedPriority = UnsignedPriority;
 }
+impl price_fetch::Config for Runtime {
+	type AuthorityId = price_fetch::crypto::TestAuthId;
+	type Call = Call;
+	type Event = Event;
+	type Currency = Balances;
+}
 
 impl frame_system::offchain::SigningTypes for Runtime {
         type Public = <Signature as Verify>::Signer;
@@ -641,6 +647,7 @@ construct_runtime!(
                 EVM: pallet_evm::{Module, Config, Call, Storage, Event<T>},
                 Ethereum: pallet_ethereum::{Module, Call, Storage, Event, Config, ValidateUnsigned},
                 Contracts: pallet_contracts::{Module, Call, Config<T>, Storage, Event<T>},
+		PriceFetch:price_fetch::{Module, Call, Storage, Event<T>,ValidateUnsigned},
 	}
 );
 
