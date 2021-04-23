@@ -19,6 +19,11 @@ git = 'https://github.com/paritytech/substrate.git'
 branch = 'rococo-v1'
 version = '3.0.0'
 
+[dependencies.pallet-contracts-rpc]
+git = 'https://github.com/paritytech/substrate.git'
+branch = 'rococo-v1'
+version = '3.0.0'
+
 [dependencies.pallet-contracts]
 git = 'https://github.com/paritytech/substrate.git'
 branch = 'rococo-v1'
@@ -187,9 +192,13 @@ git = 'https://github.com/paritytech/substrate.git'
 branch = 'rococo-v1'
 version = '3.0.0'
 
-[dependencies.bridge]
-package = 'pallet-bridge'
-path = '../pallets/bridge'
+[dependencies.gateway]
+package = 'pallet-gateway'
+path = '../pallets/gateway'
+
+[dependencies.price-fetch]
+package = 'price-fetch'
+path = '../pallets/price-fetch'
 
 [dependencies.sp-keystore]
 git = 'https://github.com/paritytech/substrate.git'
@@ -235,10 +244,6 @@ branch = 'rococo-v1'
 git = "https://github.com/paritytech/polkadot"
 branch = 'rococo-v1'
 
-[dependencies.polkadot-test-service]
-git = "https://github.com/paritytech/polkadot"
-branch = 'rococo-v1'
-
 [dependencies.polkadot-parachain]
 git = "https://github.com/paritytech/polkadot"
 branch = 'rococo-v1'
@@ -247,12 +252,12 @@ branch = 'rococo-v1'
 name = 'phoenix-collator'
 
 [package]
-authors = ['Anonymous']
+authors = ['yigo']
 build = 'build.rs'
-description = 'A new Cumulus FRAME-based Substrate node, ready for hacking.'
+description = 'a phoenix parachain network.'
 edition = '2018'
 homepage = 'https://substrate.dev'
-license = 'Unlicense'
+license = 'GPL-v3'
 name = 'phoenix-collator'
 repository = 'https://github.com/substrate-developer-hub/substrate-parachain-template'
 version = '2.0.0'
