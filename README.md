@@ -74,6 +74,10 @@ sleep 1
 git clone https://github.com/CycanTech/ELP-runtime-node
 cargo build --release
 
+# make work dir
+mkdir ../data
+mkdir ../log
+
 # Export genesis state
 ./target/release/phoenix-collator \
   export-genesis-state \
@@ -84,6 +88,19 @@ cargo build --release
 ./target/release/phoenix-collator \
   export-genesis-wasm \
   > genesis-wasm
+
+# Export spec file
+./target/release/phoenix-collator \
+  build-spec  \
+  --disable-default-bootnode \
+  > phoenix-src.json
+
+./target/release/phoenix-collator \
+  build-spec \
+  --chain phoenix-src.json \
+  --disable-default-bootnode \
+  --raw \
+  > phoenix-raw.json
 
 # Collator1
 ./target/release/phoenix-collator \
