@@ -27,8 +27,8 @@ include pallets list:
 ### Launch the Rococo RelayChain
 
 ```bash
-# Compile Polkadot with the real overseer feature
-git clone -b rococo-v1 https://github.com/paritytech/polkadot
+# Compile Polkadot v30 fork
+git clone https://github.com/CycanTech/polkadot.git 
 cargo build --release 
 
 # Generate a raw chain spec
